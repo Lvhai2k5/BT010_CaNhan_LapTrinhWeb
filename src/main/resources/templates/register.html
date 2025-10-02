@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Đăng ký tài khoản</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --card-w: 380px;
+      --pad: 22px;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin:0; padding:0 }
+    html, body {
+      height: 100%;
+      font-family: "Poppins", Arial, sans-serif;
+      color: #333;
+      overflow: hidden;
+    }
+
+    /* Nền gradient động */
+    body {
+      background: linear-gradient(-45deg, #ffe9ec, #e6f9ff, #fff9e6, #e0ffe9);
+      background-size: 400% 400%;
+      animation: gradientMove 10s ease infinite;
+    }
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #fireworks {
+      position: fixed; inset: 0; z-index: 0;
+    }
+
+    .wrapper {
+      position: relative; z-index: 2;
+      display: grid; place-items: center; height: 100%;
+      padding: 16px;
+    }
+
+    .card {
+      width: min(92vw, var(--card-w));
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(14px);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      animation: fadein .5s ease;
+    }
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    h2 {
+      text-align: center;
+      margin: 0 0 10px;
+      color: #222;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: .9rem;
+      margin-bottom: 16px;
+      color: #555;
+    }
+
+    .form-group { margin: 12px 0; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; }
+    input {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid #ccc; outline: none; background: #fff;
+      transition: all .25s;
+    }
+    input:focus {
+      border-color: #66d3ff;
+      box-shadow: 0 0 0 3px rgba(102, 211, 255, 0.3);
+    }
+
+    .error {
+      color: #b30000; font-size: .85rem; margin-top: 6px;
+    }
+
+    .btn {
+      width: 100%; margin-top: 14px; padding: 12px;
+      border: none; border-radius: 10px; font-weight: 700;
+      cursor: pointer; color: #fff;
+      background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+      transition: all .25s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(255, 154, 158, 0.4);
+    }
+
+    .foot {
+      text-align: center; margin-top: 12px; font-size: .9rem;
+    }
+    .foot a { color: #0077cc; text-decoration: none; }
+    .foot a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+
+  <div class="wrapper">
+    <div class="card">
+      <h2><i class="fa-solid fa-user-plus"></i> Đăng ký</h2>
+      <p class="subtitle">Tạo tài khoản mới để trải nghiệm ngay ✨</p>
+
+      <form th:action="@{/register}" method="post" th:object="${user}">
+        <div class="form-group">
+          <label for="username">Email (tài khoản)</label>
+          <input id="username" type="text" th:field="*{username}" placeholder="vd: user@gmail.com" />
+          <p class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <input id="password" type="password" th:field="*{password}" placeholder="Ít nhất 6 ký tự" />
+          <p class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+        </div>
+
+        <p class="error" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+
+        <button class="btn" type="submit">
+          <i class="fa-solid fa-bolt"></i> Đăng ký ngay
+        </button>
+      </form>
+
+      <div class="foot">
+        Đã có tài khoản? <a th:href="@{/login}">Đăng nhập</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fireworks -->
+  <script>
+    (() => {
+      const c=document.getElementById('fireworks'), ctx=c.getContext('2d');
+      let W,H; function resize(){W=c.width=innerWidth; H=c.height=innerHeight;} resize();
+      window.onresize=resize;
+      const parts=[];
+      function Fire(x,y,col){for(let i=0;i<70;i++){parts.push({x,y,vx:Math.cos(i)*Math.random()*4,vy:Math.sin(i)*Math.random()*4,life:80,col});}}
+      function loop(){
+        ctx.fillStyle="rgba(255,255,255,0.2)";
+        ctx.fillRect(0,0,W,H);
+        for(let i=parts.length-1;i>=0;i--){
+          const p=parts[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=0.05; p.life--;
+          ctx.fillStyle=p.col; ctx.globalAlpha=p.life/80;
+          ctx.beginPath(); ctx.arc(p.x,p.y,2,0,2*Math.PI); ctx.fill();
+          if(p.life<=0) parts.splice(i,1);
+        }
+        requestAnimationFrame(loop);
+      }
+      loop();
+      setInterval(()=>Fire(Math.random()*W,H*0.5,`hsl(${Math.random()*360},100%,60%)`),1000);
+    })();
+  </script>
+</body>
+</html>
