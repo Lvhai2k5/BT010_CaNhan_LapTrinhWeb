@@ -8,7 +8,7 @@
 
   <style>
     :root {
-      --card-w: 380px;
+      --card-w: 400px;
       --pad: 22px;
       --radius: 16px;
     }
@@ -16,15 +16,14 @@
     html, body {
       height: 100%;
       font-family: "Poppins", Arial, sans-serif;
-      color: #333;
       overflow: hidden;
     }
 
-    /* Nền gradient động */
+    /* 🌈 Nền gradient pastel động */
     body {
-      background: linear-gradient(-45deg, #ffe9ec, #e6f9ff, #fff9e6, #e0ffe9);
-      background-size: 400% 400%;
-      animation: gradientMove 10s ease infinite;
+      background: linear-gradient(-45deg, #fceabb, #f8b195, #c2ffd8, #a1c4fd, #fbc2eb);
+      background-size: 600% 600%;
+      animation: gradientMove 12s ease infinite;
     }
     @keyframes gradientMove {
       0% { background-position: 0% 50%; }
@@ -32,9 +31,7 @@
       100% { background-position: 0% 50%; }
     }
 
-    #fireworks {
-      position: fixed; inset: 0; z-index: 0;
-    }
+    #fireworks { position: fixed; inset: 0; z-index: 0; }
 
     .wrapper {
       position: relative; z-index: 2;
@@ -44,36 +41,32 @@
 
     .card {
       width: min(92vw, var(--card-w));
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(18px);
       border-radius: var(--radius);
       padding: var(--pad);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-      animation: fadein .5s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      animation: fadein .7s ease;
     }
     @keyframes fadein {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: none; }
     }
 
     h2 {
-      text-align: center;
-      margin: 0 0 10px;
-      color: #222;
+      text-align: center; margin: 0 0 8px;
+      color: #333; font-weight: 700;
     }
     .subtitle {
-      text-align: center;
-      font-size: .9rem;
-      margin-bottom: 16px;
-      color: #555;
+      text-align: center; font-size: .9rem; margin-bottom: 16px; color: #666;
     }
 
-    .form-group { margin: 12px 0; }
+    .form-group { margin: 14px 0; }
     label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; }
     input {
       width: 100%; padding: 10px 12px; border-radius: 8px;
-      border: 1px solid #ccc; outline: none; background: #fff;
+      border: 1px solid #ccc; background: #fff; outline: none;
       transition: all .25s;
     }
     input:focus {
@@ -82,24 +75,40 @@
     }
 
     .error {
-      color: #b30000; font-size: .85rem; margin-top: 6px;
+      display: none;
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: rgba(255, 0, 0, 0.08);
+      color: #b30000;
+      font-size: .85rem;
+      animation: fadeError .3s ease;
+    }
+    @keyframes fadeError {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: none; }
     }
 
     .btn {
-      width: 100%; margin-top: 14px; padding: 12px;
-      border: none; border-radius: 10px; font-weight: 700;
-      cursor: pointer; color: #fff;
-      background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+      width: 100%; margin-top: 16px; padding: 12px;
+      border: none; border-radius: 12px;
+      font-weight: 700; cursor: pointer; color: #fff;
+      background: linear-gradient(90deg, #ffecd2, #fcb69f, #ffdde1, #ee9ca7);
+      background-size: 200% auto;
       transition: all .25s;
+      animation: pulse 3s infinite alternate;
     }
     .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(255, 154, 158, 0.4);
+      background-position: right center;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(255, 154, 158, 0.4);
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 5px #ffd1dc; }
+      100% { box-shadow: 0 0 25px #ffd1dc; }
     }
 
-    .foot {
-      text-align: center; margin-top: 12px; font-size: .9rem;
-    }
+    .foot { text-align: center; margin-top: 14px; font-size: .9rem; }
     .foot a { color: #0077cc; text-decoration: none; }
     .foot a:hover { text-decoration: underline; }
   </style>
@@ -108,24 +117,22 @@
   <canvas id="fireworks"></canvas>
 
   <div class="wrapper">
-    <div class="card">
+    <div class="card" id="cardBox">
       <h2><i class="fa-solid fa-user-plus"></i> Đăng ký</h2>
-      <p class="subtitle">Tạo tài khoản mới để trải nghiệm ngay ✨</p>
+      <p class="subtitle">Tạo tài khoản mới để trải nghiệm ngay 🌸</p>
 
-      <form th:action="@{/register}" method="post" th:object="${user}">
+      <form th:action="@{/register}" method="post" th:object="${user}" id="registerForm">
         <div class="form-group">
           <label for="username">Email (tài khoản)</label>
-          <input id="username" type="text" th:field="*{username}" placeholder="vd: user@gmail.com" />
-          <p class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+          <input id="username" type="text" th:field="*{username}" placeholder="vd: user@gmail.com" maxlength="50" />
+          <p class="error" id="emailError"><i class="fa-solid fa-circle-exclamation"></i> Email phải có dạng @gmail.com</p>
         </div>
 
         <div class="form-group">
           <label for="password">Mật khẩu</label>
-          <input id="password" type="password" th:field="*{password}" placeholder="Ít nhất 6 ký tự" />
-          <p class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+          <input id="password" type="password" th:field="*{password}" placeholder="Ít nhất 6 ký tự" maxlength="30" />
+          <p class="error" id="passError"><i class="fa-solid fa-lock"></i> Mật khẩu phải ≥ 6 ký tự</p>
         </div>
-
-        <p class="error" th:if="${errorMessage}" th:text="${errorMessage}"></p>
 
         <button class="btn" type="submit">
           <i class="fa-solid fa-bolt"></i> Đăng ký ngay
@@ -147,7 +154,7 @@
       const parts=[];
       function Fire(x,y,col){for(let i=0;i<70;i++){parts.push({x,y,vx:Math.cos(i)*Math.random()*4,vy:Math.sin(i)*Math.random()*4,life:80,col});}}
       function loop(){
-        ctx.fillStyle="rgba(255,255,255,0.2)";
+        ctx.fillStyle="rgba(255,255,255,0.25)";
         ctx.fillRect(0,0,W,H);
         for(let i=parts.length-1;i>=0;i--){
           const p=parts[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=0.05; p.life--;
@@ -158,8 +165,40 @@
         requestAnimationFrame(loop);
       }
       loop();
-      setInterval(()=>Fire(Math.random()*W,H*0.5,`hsl(${Math.random()*360},100%,60%)`),1000);
+      setInterval(()=>Fire(Math.random()*W,H*0.5,`hsl(${Math.random()*360},100%,70%)`),1200);
     })();
+
+    // Realtime validate
+    const emailInput = document.getElementById("username");
+    const passInput = document.getElementById("password");
+    const emailError = document.getElementById("emailError");
+    const passError = document.getElementById("passError");
+    const cardBox = document.getElementById("cardBox");
+
+    function checkEmail() {
+      if (!emailInput.value.endsWith("@gmail.com")) {
+        emailError.style.display = "block";
+      } else {
+        emailError.style.display = "none";
+      }
+    }
+    function checkPass() {
+      if (passInput.value.length < 6) {
+        passError.style.display = "block";
+      } else {
+        passError.style.display = "none";
+      }
+    }
+
+    emailInput.addEventListener("input", checkEmail);
+    passInput.addEventListener("input", checkPass);
+
+    document.getElementById("registerForm").addEventListener("submit", function(e){
+      checkEmail(); checkPass();
+      if (emailError.style.display==="block" || passError.style.display==="block") {
+        e.preventDefault();
+      }
+    });
   </script>
 </body>
 </html>
